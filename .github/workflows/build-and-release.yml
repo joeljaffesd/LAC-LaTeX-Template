@@ -1,0 +1,66 @@
+name: Build LaTeX and Create Release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-latex:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install LaTeX
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+
+    - name: Build LaTeX document
+      run: |
+        # First LaTeX pass
+        pdflatex main.tex
+        
+        # Build bibliography
+        bibtex main
+        
+        # Second LaTeX pass (resolve citations)
+        pdflatex main.tex
+        
+        # Third LaTeX pass (resolve cross-references)
+        pdflatex main.tex
+
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lac-template-pdf
+        path: main.pdf
+
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ github.run_number }}
+        name: LAC Template v${{ github.run_number }}
+        body: |
+          Automatically generated LAC-25 template PDF from commit ${{ github.sha }}.
+          
+          This release contains the compiled PDF of the LAC-25 paper template.
+          
+          ## Changes
+          - Built from commit: ${{ github.sha }}
+          - Build date: ${{ github.event.head_commit.timestamp }}
+          
+          ## Usage
+          Download the PDF to see the formatted template output, or use the source code to create your own LAC-25 paper.
+        files: main.pdf
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

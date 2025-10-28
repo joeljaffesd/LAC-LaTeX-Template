@@ -109,6 +109,24 @@ The template supports code snippets:
 - Block code: Use `lstlisting` environment
 - Inline code: Use `\lstinline{your code}`
 
+## Automated Builds
+
+This repository includes GitHub Actions for automated LaTeX compilation:
+
+### Continuous Integration
+
+- **Build on Push/PR**: Every push and pull request automatically builds the LaTeX document
+- **Weekly Builds**: Scheduled builds ensure the template stays compilable
+- **Artifact Storage**: Compiled PDFs are stored as downloadable artifacts
+
+### Automatic Releases
+
+- **Release on Main**: Pushes to the main branch automatically create a new release
+- **PDF Attachment**: Each release includes the compiled PDF of the template
+- **Version Tagging**: Releases are automatically tagged with incremental version numbers
+
+You can download the latest compiled PDF from the [Releases](../../releases) page.
+
 ## Compilation
 
 The paper must be compiled with the following sequence for proper references:
